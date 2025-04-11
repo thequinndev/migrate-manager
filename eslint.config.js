@@ -23,5 +23,5 @@ export default defineConfig([
       "@typescript-eslint/no-unnecessary-type-constraint": "off", // Gives a false positive
     },
   },
-  globalIgnores(["node_modules/*", "coverage/*", "dist/*"]),
+  globalIgnores(["node_modules/*", "coverage/*", "dist/*", "bin/*"]),
 ]);
