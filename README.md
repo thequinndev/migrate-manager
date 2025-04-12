@@ -1,4 +1,4 @@
-# Migration Manager
+# Migrate Manager
 
 Simple and universal migration manager that leverages git history to build past and present database changesets.
 
@@ -6,7 +6,7 @@ Simple and universal migration manager that leverages git history to build past 
 npm i -g @thequinndev/migrate-manager
 ```
 
-## Migration Manager Config
+## Migrate Manager Config
 
 For a brand new project run the following at the root of your project, with the prefix of your choice. The default prefixStrategy if not defined is `timestamp`. The prefixStrategy will form as the ordering indicator of your DB changesets.
 
@@ -100,7 +100,7 @@ You may decide to have the scripts go into folders instead and with a different 
 {{prefix}}_{{increment}}_{{groupName}}/rollback.sql
 ```
 
-## Migration Manager Migration Groups
+## Migrate Manager Migration Groups
 
 The next logical question is, what is a migration group? Let's add one. Run the following.
 
