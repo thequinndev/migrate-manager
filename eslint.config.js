@@ -20,7 +20,8 @@ export default defineConfig([
       "@typescript-eslint/ban-ts-comment": "off",
       "@typescript-eslint/no-explicit-any": "off",
       "no-useless-escape": "off", // False positive for regex, I don't do useless escapes
-      "@typescript-eslint/no-unnecessary-type-constraint": "off", // Gives a false positive
+      "@typescript-eslint/no-unnecessary-type-constraint": "off", // Gives a false positive,
+      "@typescript-eslint/no-require-imports": "off",
     },
   },
   globalIgnores(["node_modules/*", "coverage/*", "dist/*", "bin/*"]),

@@ -36,7 +36,7 @@ const reverse = <T>(array: T[]): T[] => {
  */
 const buildForAny = (
   config: ChangesetConfig,
-  direction: "up" | "down"
+  direction: "up" | "down",
 ): OutputConfig => {
   /**
    * The normal function will just return the array as it is
@@ -52,7 +52,7 @@ const buildForAny = (
   const ref: string | null | undefined =
     direction === "up" ? config.upRef : (config.downRef ?? undefined);
 
-  for (const group of orderFn(config.changeItemGroups)) {
+  for (const group of orderFn(config.changeItemGroups ?? [])) {
     const output: OutputConfig["groups"][number] = {
       header: `-- BEGIN CHANGESET GROUP [${group.groupName}] --`,
       footer: `-- END CHANGESET GROUP [${group.groupName}] --`,
@@ -92,7 +92,7 @@ const buildForDown = (config: ChangesetConfig): OutputConfig => {
 const combineGroup = (
   group: OutputConfig["groups"][number],
   includeGlobalPre: boolean,
-  includeGlobalPost: boolean
+  includeGlobalPost: boolean,
 ): string => {
   let combined: string[] = [];
   combined.push(group.header);
@@ -117,7 +117,7 @@ const makeChangesetFiles = (
   migrationConfig: MigrationManagerConfig,
   outputConfig: OutputConfig,
   prefix: string,
-  direction: "up" | "down"
+  direction: "up" | "down",
 ): Record<string, string> => {
   const outputFiles: Record<string, string> = {};
 
@@ -126,11 +126,11 @@ const makeChangesetFiles = (
       direction === "up"
         ? migrationConfig.splitBy.none.upFileFormat.replace(
             "{{prefix}}",
-            prefix
+            prefix,
           )
         : migrationConfig.splitBy.none.downFileFormat.replace(
             "{{prefix}}",
-            prefix
+            prefix,
           );
 
     let finalOutput: string[] = [];
@@ -149,7 +149,7 @@ const makeChangesetFiles = (
   if (migrationConfig.splitBy?.group) {
     // Otherwise it will be by group
     let increment = 0;
-    const totalStart = outputConfig.groups.length - 1
+    const totalStart = outputConfig.groups.length - 1;
 
     for (const group of outputConfig.groups) {
       const fileName =
@@ -168,7 +168,7 @@ const makeChangesetFiles = (
       finalOutput.push(combineGroup(group, true, true));
       finalOutput = finalOutput.concat(outputConfig.post);
       outputFiles[fileName] = finalOutput.join(MigrationConstants.Padding);
-      increment++
+      increment++;
     }
 
     return outputFiles;
@@ -181,7 +181,7 @@ export const buildChangeSet = (
   migrationConfig: MigrationManagerConfig,
   changeSetConfig: ChangesetConfig,
   prefix: string,
-  dir: string
+  dir: string,
 ) => {
   const upOutput = buildForUp(changeSetConfig);
   const downOutput = buildForDown(changeSetConfig);
@@ -191,7 +191,7 @@ export const buildChangeSet = (
     migrationConfig,
     downOutput,
     prefix,
-    "down"
+    "down",
   );
 
   const outDir = `${dir}/${migrationConfig.outputDir}`;
@@ -202,10 +202,12 @@ export const buildChangeSet = (
   for (const fileName in upFiles) {
     const file = upFiles[fileName];
     writeFileSync(`${outDir}/${fileName}`, file);
+    console.log(`## Created: ${outDir}/${fileName}`);
   }
 
   for (const fileName in downFiles) {
     const file = downFiles[fileName];
     writeFileSync(`${outDir}/${fileName}`, file);
+    console.log(`## Created: ${outDir}/${fileName}`);
   }
 };
