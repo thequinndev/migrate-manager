@@ -37,6 +37,13 @@ export default defineConfig({
         "index.d.ts",
         "tsup.config.ts",
         "vite.config.mts",
+        // Exclude this because it has no way to be mocked in a meaningful way
+        "**/src/migrate-manager/exec/index.ts",
+        // This is config only
+        "src/migrate-manager/config/index.ts",
+        // Exclude bin
+        "bin",
+        "src/migrate-manager/index.ts",
       ],
     },
   },
