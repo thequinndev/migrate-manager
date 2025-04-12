@@ -9,7 +9,7 @@ const yaml = require("yaml");
 const Actions = {
   newUser: "new",
   build: "build",
-  add: "add"
+  add: "add",
 };
 
 function parseArgs(args) {
@@ -36,10 +36,10 @@ function makeDate() {
 
 function makeNumeric(lastValue) {
   if (lastValue === null) {
-    return '0000000001'
+    return "0000000001";
   }
-  const newNumber = parseInt(lastValue) + 1
-  return newNumber.toString().padStart(10, '0')
+  const newNumber = parseInt(lastValue) + 1;
+  return newNumber.toString().padStart(10, "0");
 }
 
 function buildChangeSet(action, args, dir) {
@@ -53,8 +53,7 @@ function buildChangeSet(action, args, dir) {
     const freshStart = {
       prefixStrategy: args["prefixStrategy"] ?? undefined,
     };
-    const config =
-      docolate.MigrationManager.parseMigrationManagerConfig(freshStart);
+    const config = docolate.parseMigrationManagerConfig(freshStart);
     fs.writeFileSync(`${dir}/docolate-migrate.yml`, yaml.stringify(config));
     return;
   }
@@ -63,61 +62,75 @@ function buildChangeSet(action, args, dir) {
     throw new Error("docolate-migrate config file has not been created.");
   }
 
-  const ymlFileToUse = ymlExists ?`${dir}/docolate-migrate.yml` : `${dir}/docolate-migrate.yaml`
+  const ymlFileToUse = ymlExists
+    ? `${dir}/docolate-migrate.yml`
+    : `${dir}/docolate-migrate.yaml`;
 
-  const ymlFile = fs.readFileSync(ymlFileToUse)
+  const ymlFile = fs.readFileSync(ymlFileToUse);
 
   const configFile = yaml.parse(ymlFile.toString());
-  const config =
-    docolate.MigrationManager.parseMigrationManagerConfig(configFile);
+  const config = docolate.parseMigrationManagerConfig(configFile);
 
   if (action === Actions.add) {
-    const makeFile = (base) => `${base}_migrate.yml`
+    const makeFile = (base) => `${base}_migrate.yml`;
 
-    let fileName = ''
-    const newGroupConfig = docolate.MigrationManager.parseChangesetConfigConfig({
-      description: 'description',
-      upRef: 'ref | null',
-      downRef: 'ref | undefined (remove this key entirely for undefined)',
-      changeItemGroups: [{
-          groupName: 'my_migration_action',
-          description: 'description',
+    let fileName = "";
+    const newGroupConfig = docolate.parseChangesetConfigConfig({
+      description: "description",
+      upRef: "ref | null",
+      downRef: "ref | undefined (remove this key entirely for undefined)",
+      changeItemGroups: [
+        {
+          groupName: "my_migration_action",
+          description: "description",
           changeItems: [],
-      }],
-    })
+        },
+      ],
+    });
 
-    if (!['timestamp', 'date', 'numeric'].includes(config.prefixStrategy)) {
-      throw new Error('Your docolate-migrate config file contains an invalid prefixStrategy.')
+    if (!["timestamp", "date", "numeric"].includes(config.prefixStrategy)) {
+      throw new Error(
+        "Your docolate-migrate config file contains an invalid prefixStrategy.",
+      );
     }
 
-    if (config.prefixStrategy === 'timestamp') {
-      const latestTimestamp = Math.floor(Date.now() / 1000)
-      config.migrationGroups.push({prefix: latestTimestamp.toString()})
-      fileName = makeFile(latestTimestamp)
+    if (config.prefixStrategy === "timestamp") {
+      const latestTimestamp = Math.floor(Date.now() / 1000);
+      config.migrationGroups.push({ prefix: latestTimestamp.toString() });
+      fileName = makeFile(latestTimestamp);
     }
 
-    if (config.prefixStrategy === 'date') {
-      const latestDate = makeDate()
+    if (config.prefixStrategy === "date") {
+      const latestDate = makeDate();
       // Date is potentially the worst strategy if you want to make lots of groups per day
       // If the date is already taken then an error will be thrown.
-      const found = config.migrationGroups.find(item => item.prefix === latestDate)
+      const found = config.migrationGroups.find(
+        (item) => item.prefix === latestDate,
+      );
       if (found) {
-        throw new Error(`Date ${latestDate} already exists. If you need granular change groups you should change to a different prefixStrategy.`)
+        throw new Error(
+          `Date ${latestDate} already exists. If you need granular change groups you should change to a different prefixStrategy.`,
+        );
       }
-      config.migrationGroups.push({prefix: latestDate.toString()})
-      fileName = makeFile(latestDate)
+      config.migrationGroups.push({ prefix: latestDate.toString() });
+      fileName = makeFile(latestDate);
     }
 
-    if (config.prefixStrategy === 'numeric') {
+    if (config.prefixStrategy === "numeric") {
       const numeric = !config.migrationGroups.length
-      ? makeNumeric(null)
-      : makeNumeric(config.migrationGroups[config.migrationGroups.length - 1].prefix)
-      console.log(numeric)
-      config.migrationGroups.push({prefix: numeric})
-      fileName = makeFile(numeric)
+        ? makeNumeric(null)
+        : makeNumeric(
+            config.migrationGroups[config.migrationGroups.length - 1].prefix,
+          );
+      console.log(numeric);
+      config.migrationGroups.push({ prefix: numeric });
+      fileName = makeFile(numeric);
     }
 
-    fs.writeFileSync(`${dir}/${config.migrationGroupsDir}/${fileName}`, yaml.stringify(newGroupConfig));
+    fs.writeFileSync(
+      `${dir}/${config.migrationGroupsDir}/${fileName}`,
+      yaml.stringify(newGroupConfig),
+    );
     fs.writeFileSync(ymlFileToUse, yaml.stringify(config));
 
     return;
@@ -126,7 +139,7 @@ function buildChangeSet(action, args, dir) {
   if (action === Actions.build) {
     if (args["prefix"]) {
       const target = config.migrationGroups.find(
-        (item) => item.prefix === args["prefix"]
+        (item) => item.prefix === args["prefix"],
       );
       if (!target) {
         throw new Error(`Prefix ${args["prefix"]} does not exist.`);
@@ -139,49 +152,27 @@ function buildChangeSet(action, args, dir) {
       const configFileTs = `${dir}/${config.migrationGroupsDir}/${target.prefix}_migrate.ts`;
       if (fs.existsSync(configFileTs)) {
         const changeSetConfig = require(configFileTs).changeSet;
-        const parsed =
-          docolate.MigrationManager.parseChangesetConfigConfig(changeSetConfig);
-        docolate.MigrationManager.buildChangeSet(
-          config,
-          parsed,
-          args["prefix"],
-          curDir
-        );
+        const parsed = docolate.parseChangesetConfigConfig(changeSetConfig);
+        docolate.buildChangeSet(config, parsed, args["prefix"], curDir);
       }
 
       //yml case
       const configFileYml = `${dir}/${config.migrationGroupsDir}/${target.prefix}_migrate.yml`;
       if (fs.existsSync(configFileYml)) {
         const changeSetConfig = yaml.parse(
-          fs.readFileSync(configFileYml).toString()
+          fs.readFileSync(configFileYml).toString(),
         );
-        const parsed =
-          docolate.MigrationManager.changesetConfigSchema.parse(
-            changeSetConfig
-          );
-        docolate.MigrationManager.buildChangeSet(
-          config,
-          parsed,
-          args["prefix"],
-          curDir
-        );
+        const parsed = docolate.changesetConfigSchema.parse(changeSetConfig);
+        docolate.buildChangeSet(config, parsed, args["prefix"], curDir);
       }
       //yaml case
       const configFileYaml = `${dir}/${config.migrationGroupsDir}/${target.prefix}_migrate.yaml`;
       if (fs.existsSync(configFileYaml)) {
         const changeSetConfig = yaml.parse(
-          fs.readFileSync(configFileYaml).toString()
+          fs.readFileSync(configFileYaml).toString(),
         );
-        const parsed =
-          docolate.MigrationManager.changesetConfigSchema.parse(
-            changeSetConfig
-          );
-        docolate.MigrationManager.buildChangeSet(
-          config,
-          parsed,
-          args["prefix"],
-          curDir
-        );
+        const parsed = docolate.changesetConfigSchema.parse(changeSetConfig);
+        docolate.buildChangeSet(config, parsed, args["prefix"], curDir);
       }
       //json case - probably won't happen as it'a difficult to write free-form commands
       //js case - will require making some jsdoc to help with types (or another method)
