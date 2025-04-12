@@ -15,7 +15,7 @@
     "./package.json": "./package.json"
   },
   "bin": {
-    "docolate-migrate": "./bin/docolate-migrate.cjs"
+    "migrate-manager": "./bin/migrate-manager.cjs"
   },
   "scripts": {
     "test": "vitest",
@@ -27,10 +27,10 @@
     "lint-ts": "tsc --noEmit -p ./tsconfig.lint.json",
     "prepare": "husky",
     "docker:build": "pnpm build && docker-compose build",
-    "generate:migrate:new": "pnpm run build && docker-compose run --rm migrate-manager docolate-migrate new --prefixStrategy=timestamp",
-    "generate:migrate:add": "pnpm run build && docker-compose run --rm migrate-manager docolate-migrate add",
-    "generate:migrate:1.0.0": "pnpm run build && docker-compose run --rm migrate-manager docolate-migrate build --prefix=20250215",
-    "generate:migrate:1.1.0": "pnpm run build && docker-compose run --rm migrate-manager docolate-migrate build --prefix=20250312"
+    "generate:migrate:new": "pnpm run build && docker-compose run --rm migrate-manager migrate-manager new --prefixStrategy=timestamp",
+    "generate:migrate:add": "pnpm run build && docker-compose run --rm migrate-manager migrate-manager add",
+    "generate:migrate:1.0.0": "pnpm run build && docker-compose run --rm migrate-manager migrate-manager build --prefix=20250215",
+    "generate:migrate:1.1.0": "pnpm run build && docker-compose run --rm migrate-manager migrate-manager build --prefix=20250312"
   },
   "files": [
     "dist",

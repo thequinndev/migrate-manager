@@ -10,8 +10,8 @@ RUN npm i -g
 WORKDIR /usr/migrate-manager
 
 RUN mkdir /tmp/mock-git
-COPY ./examples/migrate-manager/docolate-migrate /tmp/mock-git/migrate-manager
-COPY ./examples/migrate-manager/docolate-migrate.yml /tmp/mock-git/migrate-manager/docolate-migrate.yml
+COPY ./examples/migrate-manager/migrate-manager /tmp/mock-git/migrate-manager
+COPY ./examples/migrate-manager/migrate-manager.yml /tmp/mock-git/migrate-manager/migrate-manager.yml
 COPY ./docker/migrate-manager/mock-git/1.0.0 /tmp/mock-git/1.0.0
 COPY ./docker/migrate-manager/mock-git/1.1.0 /tmp/mock-git/1.1.0
 

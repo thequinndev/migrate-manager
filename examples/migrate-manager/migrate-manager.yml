@@ -1,6 +1,6 @@
 prefixStrategy: date
 outputDir: migrations
-migrationGroupsDir: docolate-migrate
+migrationGroupsDir: migrate-manager
 splitBy:
   none:
     upFileFormat: "{{prefix}}.up.sql"

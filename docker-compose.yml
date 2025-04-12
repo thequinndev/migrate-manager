@@ -6,8 +6,8 @@ services:
       context: .
       dockerfile: ./docker/migrate-manager/Dockerfile
     volumes:
-      - ./examples/migrate-manager/docolate-migrate.yml:/usr/migrate-manager/docolate-migrate.yml
+      - ./examples/migrate-manager/migrate-manager.yml:/usr/migrate-manager/migrate-manager.yml
       - ./examples/migrate-manager/migrations:/usr/migrate-manager/migrations
-      - ./examples/migrate-manager/docolate-migrate:/usr/migrate-manager/docolate-migrate
-      - ./dist:/usr/local/lib/node_modules/@thequinndev/docolate/dist
-      - ./bin/docolate-migrate.cjs:/usr/local/lib/node_modules/@thequinndev/docolate/bin/docolate-migrate.cjs
+      - ./examples/migrate-manager/migrate-manager:/usr/migrate-manager/migrate-manager
+      - ./dist:/usr/local/lib/node_modules/@thequinndev/migrate-manager/dist
+      - ./bin/migrate-manager.cjs:/usr/local/lib/node_modules/@thequinndev/migrate-manager/bin/migrate-manager.cjs

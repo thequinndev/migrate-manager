@@ -7,6 +7,7 @@ import {
 } from "../migration-manager.config";
 import { buildChangeSet } from "../builder";
 import { z } from "zod";
+import { Constants } from "../config";
 
 const Actions = {
   newUser: "new",
@@ -56,31 +57,36 @@ export const buildMigrationChangeSet = (
   args: ArgsSchema,
   dir: string,
 ) => {
-  const ymlExists = fs.existsSync(`${dir}/docolate-migrate.yml`);
-  const yamlExists = fs.existsSync(`${dir}/docolate-migrate.yaml`);
+  const ymlExists = fs.existsSync(`${dir}/${Constants.MigrateFileName}`);
+  const yamlExists = fs.existsSync(
+    `${dir}/${Constants.AlternateMigrateFileName}`,
+  );
 
   console.log(`## Action: ${action}`);
 
   if (action === Actions.newUser) {
     if (ymlExists || yamlExists) {
-      throw new Error("docolate-migrate config yaml already exists.");
+      throw new Error("migrate-manager config yaml already exists.");
     }
     const freshStart = {
       prefixStrategy: args.prefixStrategy ?? undefined,
     };
     const config = parseMigrationManagerConfig(freshStart);
-    fs.writeFileSync(`${dir}/docolate-migrate.yml`, yaml.stringify(config));
-    console.log(`## Created: ${dir}/docolate-migrate.yml`);
+    fs.writeFileSync(
+      `${dir}/${Constants.MigrateFileName}`,
+      yaml.stringify(config),
+    );
+    console.log(`## Created: ${dir}/${Constants.MigrateFileName}`);
     return;
   }
 
   if (!ymlExists && !yamlExists) {
-    throw new Error("docolate-migrate config file has not been created.");
+    throw new Error("migrate-manager config file has not been created.");
   }
 
   const ymlFileToUse = ymlExists
-    ? `${dir}/docolate-migrate.yml`
-    : `${dir}/docolate-migrate.yaml`;
+    ? `${dir}/${Constants.MigrateFileName}`
+    : `${dir}/${Constants.AlternateMigrateFileName}`;
 
   const ymlFile = fs.readFileSync(ymlFileToUse);
 
@@ -106,7 +112,7 @@ export const buildMigrationChangeSet = (
 
     if (!["timestamp", "date", "numeric"].includes(config.prefixStrategy)) {
       throw new Error(
-        "Your docolate-migrate config file contains an invalid prefixStrategy.",
+        "Your migrate-manager config file contains an invalid prefixStrategy.",
       );
     }
 
