@@ -3,7 +3,7 @@
 Simple and universal migration manager that leverages git history to build past and present database changesets.
 
 ```
-npm i -g @thequinndev/docolate
+npm i -g @thequinndev/migrate-manager
 ```
 
 ## Migration Manager Config
